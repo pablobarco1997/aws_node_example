@@ -1,0 +1,24 @@
+{
+  "name": "aws_node_example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pablobarco1997/aws_node_example.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pablobarco1997/aws_node_example/issues"
+  },
+  "homepage": "https://github.com/pablobarco1997/aws_node_example#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
