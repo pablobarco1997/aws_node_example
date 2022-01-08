@@ -33,7 +33,10 @@ const server = app.listen(app.set('port'), () => {
 
 const IO =  new socket.ModuleSocket(server);
 
-IO.RunnigServerIO();  */
+IO.RunnigServerIO();  
+
+
+*/
 
 
 process.on('unhandledRejection', function(err){
