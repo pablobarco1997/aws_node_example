@@ -48,7 +48,13 @@ class ClassIOsocket{
 
         if(user_name != ''){
             
-            let result_file_client_what = fs.readFileSync('./sessiones/wa_client.txt', 'utf8');
+            let result_file_client_what = fs.readFileSync('./sessiones/wa_client.txt', {encoding:'utf8', flag:'r'} , function(err, data){
+                if(err)
+                console.log(err);
+                else
+                console.log(data);
+            });
+            
             result_file_client_what = result_file_client_what.replace(/sustituir/g, user_name); 
             result_file_client_what = result_file_client_what.replace(/client/g, user_name); 
 
