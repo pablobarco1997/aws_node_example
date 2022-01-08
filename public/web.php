@@ -104,7 +104,7 @@ define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] );
 
             setTimeout(()=>{
 
-                const socket =  io.connect(URLIO);
+                const socket =  io.connect('http://ec2-18-117-195-56.us-east-2.compute.amazonaws.com:3000');
 
                 socket.on('server:connect', (response) => { 
 
