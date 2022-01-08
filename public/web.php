@@ -100,7 +100,7 @@ define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] );
 
         if( $('#socket_client_io').length == 1){
 
-            const URLIO = "<?= HTTP_HOST ?>" + ":3000";
+            const URLIO = "<?= DNS_SERVER ?>" + ":3000";
 
             setTimeout(()=>{
 
