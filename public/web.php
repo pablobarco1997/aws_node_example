@@ -1,7 +1,7 @@
 
 <?php 
 
-define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME']); 
+define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME'].'/node_example' ); 
 
 ?>
 
