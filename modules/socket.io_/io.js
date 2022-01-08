@@ -11,7 +11,7 @@ class ClassIOsocket{
         
         this.IO = socket(server, {
             cors: {
-                origin: "http://localhost",
+                origin: 'http://ec2-18-117-195-56.us-east-2.compute.amazonaws.com/',
                 methods: ["GET", "POST"]
               }
         }); 
