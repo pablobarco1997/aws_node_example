@@ -1,3 +1,11 @@
+
+<?php 
+
+define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME']); 
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +64,7 @@
 
 <script>
 
-    var ClientWebIO  =  { users: 'prueba_002' ,  IO: null , url: 'http://localhost:3000'};
+    var ClientWebIO  =  { users: 'prueba_002' ,  IO: null , url: 'http://'<?= HTTP_HOST ?>':3000'};
 
     const  qroption = (texto) => {
 
@@ -90,7 +98,7 @@
 
         if( $('#socket_client_io').length == 1){
 
-            const URLIO = 'http://localhost:3000';
+            const URLIO = 'http://'<?= HTTP_HOST ?>':3000';
 
             setTimeout(()=>{
 
@@ -130,7 +138,7 @@
             
                 const script = document.createElement('script'); 
                 document.head.appendChild(script); 
-                script.src   = 'http://localhost:3000/socket.io/socket.io.js';
+                script.src   = 'http://'<?= HTTP_HOST ?>':3000/socket.io/socket.io.js';
                 script.id    = 'socket_client_io'
             }
         }
@@ -146,7 +154,7 @@
             
                 const script = document.createElement('script'); 
                 document.body.appendChild(script); 
-                script.src   = 'http://localhost/aws_node_example/public/js/clientIO.js';
+                script.src   = 'http://'<?= HTTP_HOST ?>'/aws_node_example/public/js/clientIO.js';
                 script.id    = 'wa_client_socket'
             }
         } 
