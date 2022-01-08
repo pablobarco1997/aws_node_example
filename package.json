@@ -19,6 +19,9 @@
   },
   "homepage": "https://github.com/pablobarco1997/aws_node_example#readme",
   "dependencies": {
-    "express": "^4.17.2"
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "socket.io": "^4.4.0",
+    "whatsapp-web.js": "^1.15.3"
   }
 }

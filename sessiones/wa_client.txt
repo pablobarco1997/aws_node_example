@@ -1,0 +1,108 @@
+const users_IO      = 'sustituir';  
+const fs            = require('fs');
+const { Client }    = require('whatsapp-web.js');
+let client; 
+
+function clintWhatsapp(IO){
+
+    client   =  new Client();
+
+    client.on('qr', (qr) => {
+        IO.emit(users_IO + ':SEND_WHATSAPP_QR', qr); 
+    });
+
+    client.on('authenticated', (sessionD) => {
+
+        console.log(sessionD); 
+        var pathSessionUser = './sessiones/session_json/users_' + users_IO + '_session.json'; 
+        fs.writeFile(pathSessionUser, JSON.stringify(sessionD), (err) => {
+            if (err) {
+                console.log(err); 
+                IO.emit(users_IO + ':send_what_session_authe', {msg: 'Ocurrio Consulte con soporte'} );
+            }else{
+                    //se envia la informacion del cliente para la actualizaion
+                    IO.emit(users_IO + ':send_what_session_authe', {msg: 'Información Actualizada'} ); 
+            }
+        }); 
+
+    });
+
+    client.on('ready', () => {
+
+        //se envia la informacion del cliente para la actualizaion
+        var me_contact = {
+            pushname : client.info.pushname , 
+            me: client.info.me
+        } 
+
+        IO.emit(users_IO + ':send_what_session_authe', {accion:'contact', contact: me_contact, use: users_IO} )
+        clDestroy(); 
+
+    });
+
+    client.on('message', msg => {
+        if (msg.body == '!ping') {
+            msg.reply('pong');
+        }
+    }); 
+
+    client.initialize();
+}
+
+function send_menssage(number, msg_){
+    
+    const contry_code        = "593"; 
+    const number_cli         = number.toString().replace(/[- )(]/g, "");  //remueve caracteres imnecesarios
+    const code               = "@c.us"; 
+    const chat_id            = contry_code + number_cli + code; 
+
+    var pathSessionUser = './sessiones/session_json/users_' + users_IO + '_session.json'; 
+    var otraSession     = require(pathSessionUser);
+
+    client      = new Client({
+        session: otraSession
+    });
+
+    const msg = msg_; 
+
+    client.on('ready', () => {
+        console.log('ya esta la session'); 
+        client.sendMessage(chat_id, msg)
+            .then(response => {
+                if(response.id.fromMe){
+                    clDestroy(); //se destroye la session 
+                    console.log('Mensage  enviado');  
+                }else{
+                    console.log('Mensage no enviado'); 
+                }
+        }); 
+    }); 
+
+    client.on('auth_failure', () => {
+        console.log("Ocurrio un error de autenticacion");  
+    }); 
+
+    client.initialize();
+
+}
+
+async function clDestroy(){
+    setTimeout(() => {
+        client.removeAllListeners();
+        client.destroy(); 
+        console.log('session destroy'); 
+      }, 2000);
+}
+
+//asycn remove
+async function cerrarSessionClent(){
+    setTimeout(() => {
+        client.removeAllListeners(); 
+      }, 1000);
+}
+
+
+module.exports.whatsappClient    = clintWhatsapp; 
+module.exports.destroyClientWhat = cerrarSessionClent; 
+module.exports.send_menssage     = send_menssage; 
+

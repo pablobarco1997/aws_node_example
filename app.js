@@ -1,13 +1,35 @@
-const express = require('express'); 
-const app     = express();
+
+const express       = require('express');
+const cors          = require('cors');  
+const socket        = require('./modules/socket.io_/io.js'); 
+const app           = express();
+
+//Control de accesos HTTP o CORS
+const cors_setting = {
+    origin               : 'http://localhost/', 
+    credentials          : true,            //access-control-allow-credentials:true
+    optionSuccessStatus  : 200
+}; 
+
+app.use(cors(cors_setting)); 
+
+app.set('port' , 3000); 
+
+app.use(express.urlencoded({extended: false})); 
+
+app.use(express.json()); 
 
 
-
-app.get('/' , (req, res) => {
-    res.send('Hola mundo Server: 3000'); 
+const server = app.listen(app.set('port'), () => {
+    console.log('Desde la carpeta Server runing port ' + app.set('port')); 
 }); 
 
-const server =  app.listen(3000, () => {
-    console.log('server 3000'); 
+const IO =  new socket.ModuleSocket(server);
+
+IO.RunnigServerIO(); 
+
+
+process.on('unhandledRejection', function(err){
+    console.log(err); 
 }); 
 
