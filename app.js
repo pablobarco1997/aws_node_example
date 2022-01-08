@@ -12,6 +12,10 @@ const cors_setting = {
     optionSuccessStatus  : 200
 }; 
 
+app.get('/', (req, res) => {
+    console.log('Hola'); 
+}); 
+
 app.use(cors(cors_setting)); 
 
 app.set('port' , 3000); 
@@ -25,9 +29,11 @@ const server = app.listen(app.set('port'), () => {
     console.log('Desde la carpeta Server runing port ' + app.set('port')); 
 }); 
 
+/*
+
 const IO =  new socket.ModuleSocket(server);
 
-IO.RunnigServerIO(); 
+IO.RunnigServerIO();  */
 
 
 process.on('unhandledRejection', function(err){
