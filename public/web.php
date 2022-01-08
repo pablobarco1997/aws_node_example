@@ -1,7 +1,8 @@
 
 <?php 
 
-define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME'].'/node_example' ); 
+define('HTTP_HOST' , 'http://'.$_SERVER['SERVER_NAME'].'/node_example' ); 
+define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] ); 
 
 ?>
 
@@ -139,7 +140,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME'].'/node_example' );
             
                 const script = document.createElement('script'); 
                 document.head.appendChild(script); 
-                script.src   = "<?= HTTP_HOST ?>" + ":3000/socket.io/socket.io.js";
+                script.src   = "<?= DNS_SERVER ?>" + ":3000/socket.io/socket.io.js";
                 script.id    = 'socket_client_io'
             }
         }
