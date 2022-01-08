@@ -98,7 +98,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME']);
 
         if( $('#socket_client_io').length == 1){
 
-            const URLIO = 'http://'<?= HTTP_HOST ?>':3000';
+            const URLIO = <?= HTTP_HOST ?>':3000';
 
             setTimeout(()=>{
 
@@ -138,7 +138,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME']);
             
                 const script = document.createElement('script'); 
                 document.head.appendChild(script); 
-                script.src   = 'http://'<?= HTTP_HOST ?>':3000/socket.io/socket.io.js';
+                script.src   = <?= HTTP_HOST ?>':3000/socket.io/socket.io.js';
                 script.id    = 'socket_client_io'
             }
         }
@@ -154,7 +154,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME']);
             
                 const script = document.createElement('script'); 
                 document.body.appendChild(script); 
-                script.src   = 'http://'<?= HTTP_HOST ?>'/aws_node_example/public/js/clientIO.js';
+                script.src   = <?= HTTP_HOST ?>'/aws_node_example/public/js/clientIO.js';
                 script.id    = 'wa_client_socket'
             }
         } 
