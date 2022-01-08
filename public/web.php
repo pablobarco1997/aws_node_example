@@ -65,7 +65,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME'].'/node_example' );
 
 <script>
 
-    var ClientWebIO  =  { users: 'prueba_002' ,  IO: null , url: 'http://'<?= HTTP_HOST ?>':3000'};
+    var ClientWebIO  =  { users: 'prueba_002' ,  IO: null , url: "<?= HTTP_HOST ?>" + ":3000"};
 
     const  qroption = (texto) => {
 
@@ -139,7 +139,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME'].'/node_example' );
             
                 const script = document.createElement('script'); 
                 document.head.appendChild(script); 
-                script.src   = <?= HTTP_HOST ?>':3000/socket.io/socket.io.js';
+                script.src   = "<?= HTTP_HOST ?>" + ":3000/socket.io/socket.io.js";
                 script.id    = 'socket_client_io'
             }
         }
@@ -155,7 +155,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME'].'/node_example' );
             
                 const script = document.createElement('script'); 
                 document.body.appendChild(script); 
-                script.src   = <?= HTTP_HOST ?>'/aws_node_example/public/js/clientIO.js';
+                script.src   = "<?= HTTP_HOST ?>" + "/aws_node_example/public/js/clientIO.js";
                 script.id    = 'wa_client_socket'
             }
         } 
