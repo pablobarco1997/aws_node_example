@@ -99,7 +99,7 @@ define('HTTP_HOST', 'http://'.$_SERVER['SERVER_NAME'].'/node_example' );
 
         if( $('#socket_client_io').length == 1){
 
-            const URLIO = <?= HTTP_HOST ?>':3000';
+            const URLIO = "<?= HTTP_HOST ?>" + ":3000";
 
             setTimeout(()=>{
 
