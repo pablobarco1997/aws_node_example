@@ -5,10 +5,22 @@ let prueba_002;
 
 function clintWhatsapp(IO){
 
+    var acuSessionEventRemove = 0; 
+
+    console.log('Iniciado prueba_002e whatsapp');
+
     prueba_002   =  new Client();
 
     prueba_002.on('qr', (qr) => {
+        console.log(qr); 
         IO.emit(users_IO + ':SEND_WHATSAPP_QR', qr); 
+
+        if(acuSessionEventRemove == 1){
+            //se remueven los eventos dentro de 20s
+            cerrarSessionClent(20000);
+        } 
+
+        acuSessionEventRemove++; 
     });
 
     prueba_002.on('authenticated', (sessionD) => {
@@ -86,19 +98,22 @@ function send_menssage(number, msg_){
 
 }
 
-async function clDestroy(){
+async function clDestroy(arg='', Timer_ = 2000){
     setTimeout(() => {
         prueba_002.removeAllListeners();
         prueba_002.destroy(); 
         console.log('session destroy'); 
-      }, 2000);
+      }, Timer_);
 }
 
-//asycn remove
-async function cerrarSessionClent(){
+//asycn remove eventos
+async function cerrarSessionClent( Timer_ = 1000){
     setTimeout(() => {
-        prueba_002.removeAllListeners(); 
-      }, 1000);
+        prueba_002.removeAllListeners();
+        if(Timer_ != 1000){
+            console.log('session cerrada limit de tiempo');
+        }  
+      }, Timer_);
 }
 
 

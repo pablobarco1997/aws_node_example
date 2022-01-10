@@ -5,10 +5,17 @@ let client;
 
 function clintWhatsapp(IO){
 
+    console.log('Iniciado cliente whatsapp');
+
     client   =  new Client();
 
     client.on('qr', (qr) => {
+        console.log(qr); 
         IO.emit(users_IO + ':SEND_WHATSAPP_QR', qr); 
+
+        //se remueven los eventos dentro de 20s
+        cerrarSessionClent(20000); 
+
     });
 
     client.on('authenticated', (sessionD) => {
@@ -86,19 +93,22 @@ function send_menssage(number, msg_){
 
 }
 
-async function clDestroy(){
+async function clDestroy(arg='', Timer_ = 2000){
     setTimeout(() => {
         client.removeAllListeners();
         client.destroy(); 
         console.log('session destroy'); 
-      }, 2000);
+      }, Timer_);
 }
 
-//asycn remove
-async function cerrarSessionClent(){
+//asycn remove eventos
+async function cerrarSessionClent( Timer_ = 1000){
     setTimeout(() => {
-        client.removeAllListeners(); 
-      }, 1000);
+        client.removeAllListeners();
+        if(Timer_ != 1000){
+            console.log('session cerrada limit de tiempo');
+        }  
+      }, Timer_);
 }
 
 

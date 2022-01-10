@@ -6,8 +6,8 @@ const app           = express();
 
 //Control de accesos HTTP o CORS
 const cors_setting = {
-    //origin               : 'http://localhost/', 
-    origin               : 'http://ec2-18-117-195-56.us-east-2.compute.amazonaws.com/', 
+    origin               : 'http://localhost/', 
+    //origin               : 'http://ec2-18-117-195-56.us-east-2.compute.amazonaws.com/', 
     credentials          : true,            //access-control-allow-credentials:true
     optionSuccessStatus  : 200
 }; 

@@ -1,8 +1,27 @@
 
 <?php 
 
+/*
 define('HTTP_HOST' , 'http://'.$_SERVER['SERVER_NAME'].'/node_example' ); 
-define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] ); 
+define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] );
+*/ 
+
+
+
+define('HOST_LOCAL', $_SERVER['SERVER_NAME']); 
+
+if(HOST_LOCAL == 'localhost'){
+
+    define('HTTP_HOST' , 'http://'.$_SERVER['SERVER_NAME'] ); 
+    define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] );
+
+}else{
+
+    define('HTTP_HOST' , 'http://'.$_SERVER['SERVER_NAME'].'/node_example' ); 
+    define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] );
+
+}
+
 
 ?>
 
@@ -104,7 +123,7 @@ define('DNS_SERVER' , 'http://'.$_SERVER['SERVER_NAME'] );
 
             setTimeout(()=>{
 
-                const socket =  io.connect('http://ec2-18-117-195-56.us-east-2.compute.amazonaws.com:3000');
+                const socket =  io.connect(URLIO);
 
                 socket.on('server:connect', (response) => { 
 
