@@ -250,4 +250,4 @@ if(HOST_LOCAL == 'localhost'){
 </script>
 
 <!--ClientIO js-->
-<script src="<?= DNS_SERVER ?>/aws_node_example/public/js/clientIO.js"></script>
+<script src="<?= HTTP_HOST ?>/aws_node_example/public/js/clientIO.js"></script>
