@@ -56,7 +56,7 @@ function clintWhatsapp(IO){
         };
 
         IO.emit(users_IO + ':send_what_session_authe', {msg: 'Cliente listo para usar whatsapp'} );
-        clDestroy(); 
+        clDestroy(1500);
 
     });
 
@@ -101,7 +101,7 @@ function send_menssage(IO, number, msg_){
                     console.log('Mensage no enviado');
                     IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Mensaje No Enviado' });
                 }
-                clDestroy(); //se destroye la session
+                clDestroy(1000); //se destroye la session
         }); 
     }); 
 
@@ -114,7 +114,7 @@ function send_menssage(IO, number, msg_){
 
 }
 
-async function clDestroy(arg='', Timer_ = 2000){
+async function clDestroy(Timer_ = 2000){
     setTimeout(() => {
         if(client != null){
             client.removeAllListeners();
@@ -125,7 +125,7 @@ async function clDestroy(arg='', Timer_ = 2000){
 }
 
 //asycn remove eventos
-async function cerrarSessionClent( Timer_ = 1000){
+async function cerrarSessionClent(Timer_ = 1000){
     setTimeout(() => {
         if(client != null){
             client.removeAllListeners();
