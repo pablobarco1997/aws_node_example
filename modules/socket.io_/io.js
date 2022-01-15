@@ -53,11 +53,11 @@ class ClassIOsocket{
             this.connecionSocket = socket;
 
             //se recrea la coneccion del cliente Se registra la Coneccion con Mysql
-            this.IOclientesConnect.nuevoClientConnect(socket, {
+            /*this.IOclientesConnect.nuevoClientConnect(socket, {
                 userClinica: user_db ,
                 numberPhone: numberPhone,
                 io_id: socket.id
-            });
+            }); */
 
             console.log('Nuevo Cliente conneccion ' + socket.id + " db " + user_db);
 
