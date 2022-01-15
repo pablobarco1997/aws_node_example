@@ -1,12 +1,14 @@
 
 const express       = require('express');
 const cors          = require('cors');  
-const socket        = require('./modules/socket.io_/io.js'); 
+const socket        = require('./modules/socket.io_/io.js');
+const MysqlLink     = require('./modules/mysql/mysql_.js');
+
 const app           = express();
 
 //Control de accesos HTTP o CORS
 const cors_setting = {
-    origin               : 'http://localhost/', 
+    origin               : '*',
     //origin               : 'http://ec2-18-117-195-56.us-east-2.compute.amazonaws.com/', 
     credentials          : true,            //access-control-allow-credentials:true
     optionSuccessStatus  : 200
@@ -30,14 +32,13 @@ const server = app.listen(app.set('port'), () => {
 }); 
 
 
+//import mysql
+const db   = MysqlLink;
 
-const IO =  new socket.ModuleSocket(server);
+//Connect Socket
+const IO =  new socket.ModuleSocket(server, db);
 
-IO.RunnigServerIO();  
-
-
-
-
+IO.RunnigServerIO();
 
 process.on('unhandledRejection', function(err){
     console.log(err); 

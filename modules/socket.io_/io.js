@@ -1,13 +1,26 @@
 
-//const txt           = require('../../sessiones/whatsapp_client/prueba_002.js');
+
+/*
+    Solution - Running as root without --no-sandbox is not supported
+    https://github.com/pedroslopez/whatsapp-web.js/issues/344
+
+
+    Enviar parametros por socket io cliente
+    https://www.it-swarm-es.com/es/javascript/socket.io-parametros-en-la-conexion/1048210368/
+
+    //usuario especifico o varios usuarios
+    https://es.stackoverflow.com/questions/100729/enviar-mensaje-a-un-usuario-en-especifico-en-nodejs-socket-io
+
+ */
+
 const fs            = require('fs'); 
 const socket        = require('socket.io');
-
+const ClientesIO    = require('../io_client_connect/clientes_io.js');
 
 class ClassIOsocket{
     
 
-    constructor(server){
+    constructor(server, MysqlConnect){
         
         this.IO = socket(server, {
             cors: {
@@ -16,80 +29,83 @@ class ClassIOsocket{
               }
         }); 
 
-        this.connecionSocket = null; 
+        this.connecionSocket = null;
+        this.db = MysqlConnect;
+        const IOClientes       = new ClientesIO.createClient(MysqlConnect);
+        this.IOclientesConnect = IOClientes;
+
+
+        //this.ClientWhat_ =  new WhatClient_.ClientWhat_(MysqlConnect);
+
     }
+
 
     RunnigServerIO(){
 
-        this.IO.on('connection' , (socket) => { 
+        this.IO.on('connection' , (socket) => {
 
-            this.connecionSocket = socket; 
+            //Inicializa el socket
+            let dataIO      = JSON.parse(socket.handshake.query.dataUserClinica);
+            let user_db     = dataIO['namedb_'];
+            let numberPhone = dataIO['numberPhone'];
 
-            console.log('Nuevo Cliente conneccion ' + socket.id);
+            //this.ClientWhat_.listenIOwhat(socket); //se listen  whatsapp
+            this.connecionSocket = socket;
 
-            socket.emit('server:connect', {response: 'conectado'}); 
+            //se recrea la coneccion del cliente Se registra la Coneccion con Mysql
+            this.IOclientesConnect.nuevoClientConnect(socket, {
+                userClinica: user_db ,
+                numberPhone: numberPhone,
+                io_id: socket.id
+            });
 
-            socket.on('File:usersWhat' , (response) => {
+            console.log('Nuevo Cliente conneccion ' + socket.id + " db " + user_db);
 
-                console.log(response); 
-                if(response.users != ''){
+            //se inicializa el whatsapp para el usuario
+            socket.on(user_db + ':app_whatsapp' , () => {
+                this.IOclientesConnect.initializeWhatClient(socket, dataIO);
+            });
 
-                    this.FileCreateWhat(response.users);
-                } 
+            //enviar a todos los usuarios
+            // socket.on(user_db + ':enviar_mensaje_whatsap' , () => {
+            //     this.IO.sockets.emit(user_db + ':Connect' , { namedb_ : user_db});
+            // });
 
-            }); 
 
-        }); 
+            //fetch message send whatsapp
+            socket.on(user_db + ':enviar_mensaje_whatsap' , (response) => {
+                let message = response.msg;
+                let phone   = response.phone;
+                this.IOclientesConnect.SendMessage(socket, dataIO, {message: message, phone : phone });
+            });
+
+
+            //solo al que se desconecto socket
+            socket.on('disconnect', (reason) => {
+
+                console.log(`client disconnect ${socket.id} due to ${reason} name_db_clinica: ${user_db}`);
+
+                //se cierra session del evento Whatsap
+                this.onCloseEventsWhat(user_db);
+            });
+
+
+        });
 
     }
 
+    //cerrar session o evento del cliente
+    onCloseEventsWhat(user_name){
 
-    FileCreateWhat(user_name){
+        if(fs.existsSync('./sessiones/whatsapp_client/' + user_name + '.js')){
 
-        if(user_name != ''){
-            
-            let result_file_client_what = fs.readFileSync('./sessiones/wa_client.txt', {encoding:'utf8', flag:'r'} , function(err, data){
-                if(err)
-                console.log(err);
-                else
-                console.log(data);
-            });
-            
-            result_file_client_what = result_file_client_what.replace(/sustituir/g, user_name); 
-            result_file_client_what = result_file_client_what.replace(/client/g, user_name); 
-
-            var FILE_CONTENT  = result_file_client_what;
-            var FILE_PATH     = './sessiones/whatsapp_client/' + user_name + '.js'; 
-
-            fs.writeFile(FILE_PATH , FILE_CONTENT ,  (err) => {
-                if(err){
-
-                   this.connecionSocket.emit(user_name + ':FILE_SERVER_ERROR'); 
-
-                }else{
-
-                    this.connecionSocket.emit(user_name + ':FILE_SERVER_WHAT_EXITS');
-
-                    this.GenerarQR(user_name); 
-                }
-            }); 
-
-        }else{
-
-            // this.connecionSocket.emit(user_name + ':USUARIO_NO_ASIGNADO'); 
-        
+            const clientWP = require('../../sessiones/whatsapp_client/' + user_name + '.js');
+            clientWP.destroyClientWhat(this.connecionSocket);
         }
 
-        
     }
 
 
-    GenerarQR(user_name){
-
-        const clientWP = require('../../sessiones/whatsapp_client/' + user_name ); 
-        clientWP.whatsappClient(this.connecionSocket); 
-
-    }
 
 }
 

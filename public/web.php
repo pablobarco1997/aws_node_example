@@ -37,7 +37,7 @@ if(HOST_LOCAL == 'localhost'){
 
     <script src="<?= HTTP_HOST.'/aws_node_example/public/js/jquery-qrcode-0.18.0.min.js' ?> "></script>
 
-        <!-- Latest compiled and minified CSS -->
+    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <!-- Optional theme -->
@@ -47,6 +47,9 @@ if(HOST_LOCAL == 'localhost'){
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!--socket  3000-->
+    <script src="<?= DNS_SERVER .':3000/socket.io/socket.io.js' ?>"></script>
 
     <title>QR</title>
 </head>
@@ -62,7 +65,9 @@ if(HOST_LOCAL == 'localhost'){
                 <small>Actualizar codigo qr</small>
                 <a class="btn btn-xs btn-default" href="#" role="button" id="btWhatsappQr" > 
                     <i class="fab fa-whatsapp" style='font-size: 3rem'></i>
-                </a> 
+                </a>
+
+                <button class="btn btn-xs btn-default" id="SendExampleWhatClient">Enviar mensaje de prueba 0987722863</button>
             </h3>
 
             <p class="text-center">
@@ -85,7 +90,27 @@ if(HOST_LOCAL == 'localhost'){
 
 <script>
 
-    var ClientWebIO  =  { users: 'prueba_002' ,  IO: null , url: "<?= HTTP_HOST ?>" + ":3000"};
+    var URL = new URLSearchParams(window.location.search);
+
+    $(document).ready(function () {
+
+        if( !URL.has('client') || !URL.has('number_phone') ){
+                alert('Ingrese un usuario por la URL client=? && number_phone=?');
+            return false;
+        }
+
+    });
+
+    var ClientWebIO  =  { users: URL.get('client') ,  IO: null , url: "<?= HTTP_HOST ?>" + ":3000", phone: URL.get('number_phone')};
+
+    const URLIO = "<?= DNS_SERVER ?>" + ":3000";
+
+    var parametrosIOConnect = {
+        namedb_: ClientWebIO.users ,
+        numberPhone :  ClientWebIO.phone
+    };
+
+    const socket =  io.connect(URLIO, { query: 'dataUserClinica=' + JSON.stringify(parametrosIOConnect) } );
 
     const  qroption = (texto) => {
 
@@ -115,41 +140,54 @@ if(HOST_LOCAL == 'localhost'){
 
     function fetchConnectionIO(){
 
-        ScriptImportar('io'); 
+        // ScriptImportar('io');
 
-        if( $('#socket_client_io').length == 1){
+        // if(FileExistSession(ClientWebIO.users) != null){
+        //     alert('Ya una session establecida | Si tiene inconvenientes con el envio de mensajes. actualize la session escaneado whatsapp qr');
+        // }
 
-            const URLIO = "<?= DNS_SERVER ?>" + ":3000";
+        //socket.emit('File:usersWhat' , { users: ClientWebIO.users });
 
-            setTimeout(()=>{
+        socket.emit(ClientWebIO.users + ':app_whatsapp');
 
-                const socket =  io.connect(URLIO);
+        /*
+        setTimeout(() => {
+            socket.on('server:connect', (response) => {
+                ClientWebIO.IO     = socket;
+                ScriptImportar('ClientIO'); //se importa script para listen server
+                socket.emit('File:usersWhat' , { users: ClientWebIO.users });
+                alert('cliente conectado ' + response.response);
+            });
+        }, 1000);
+        */
 
-                socket.on('server:connect', (response) => { 
-
-                    ClientWebIO.IO     = socket;
-                    
-                    ScriptImportar('ClientIO'); //se importa script para listen server
-                    
-                    alert('cliente conectado ' + response.response);
-                    
-                    socket.emit('File:usersWhat' , { users: ClientWebIO.users });
-                
-                });
-
-            }, 1000);
-
-        }else{
-
-            alert('Ocurrio un error consulte con soporte'); 
-        } 
-
+    }
+    
+    function FileExistSession(userNameClient) {
+        var file_exits = null;
+        var File_user_session = "users_" + userNameClient + "_session.json";
+        $.ajax({
+            url: "<?= HTTP_HOST ?>/aws_node_example/public/controller/File_exits_session.php",
+            dataType : "json",
+            data: {'accion': 'VALID_FILE' , 'file_exits' : File_user_session},
+            type : "GET",
+            cache: false,
+            async: false,
+            complete: function(xhr, status){ },
+            success: function (response) {
+                if(response['success'] == 'exits'){
+                    file_exits = response['success'];
+                }
+            }
+        });
+        return file_exits;
     }
 
     function ScriptImportar(script='', remove=false){
         
         if(script=='io'){ //para esuchar los llamados del servidor  
 
+            /*
             if(remove){
 
                 var ElementScript = document.getElementById('socket_client_io');
@@ -159,9 +197,10 @@ if(HOST_LOCAL == 'localhost'){
             
                 const script = document.createElement('script'); 
                 document.head.appendChild(script); 
-                script.src   = "<?= DNS_SERVER ?>" + ":3000/socket.io/socket.io.js";
+                script.src   = "< ?= DNS_SERVER ?>" + ":3000/socket.io/socket.io.js";
                 script.id    = 'socket_client_io'
             }
+            */
         }
 
         if(script=='ClientIO'){ //para esuchar los llamados del servidor  
@@ -182,16 +221,33 @@ if(HOST_LOCAL == 'localhost'){
 
     }
 
-    function Generate_qr(base64=''){
-        if(base64!=''){
+    function Generate_qr(base64=null, remove=false){
+        if(base64!=null){
             $("#qr_template").empty(); 
             $("#qr_template").qrcode(qroption(base64));
+        }else{
+            if(remove){
+                $("#qr_template").empty();
+            }
         }
     }
 
     $("#btWhatsappQr").click(function(){
 
         fetchConnectionIO(); 
-    }); 
+    });
+
+    $("#SendExampleWhatClient").click(function () {
+
+        socket.emit(ClientWebIO.users + ':enviar_mensaje_whatsap', {
+            phone: 987722863 ,
+            msg: 'Hola mensaje de prueba de confirmacion funcional'
+        });
+
+    })
+
 
 </script>
+
+<!--ClientIO js-->
+<script src="<?= DNS_SERVER ?>/aws_node_example/public/js/clientIO.js"></script>
