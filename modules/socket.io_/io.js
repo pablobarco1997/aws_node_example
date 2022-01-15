@@ -100,7 +100,7 @@ class ClassIOsocket{
         if(fs.existsSync('./sessiones/whatsapp_client/' + user_name + '.js')){
 
             const clientWP = require('../../sessiones/whatsapp_client/' + user_name + '.js');
-            clientWP.destroyClientWhat(this.connecionSocket);
+            // clientWP.destroyClientWhat(this.connecionSocket);
         }
 
     }

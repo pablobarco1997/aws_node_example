@@ -57,7 +57,6 @@ class ClientWhatsapp_ {
 
 
     GenerarQR(IO, user_name){
-
         const clientWP = require('../../sessiones/whatsapp_client/'+user_name+'.js');
         clientWP.whatsappClient(IO);
 

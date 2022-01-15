@@ -56,7 +56,7 @@ function clintWhatsapp(IO){
         };
 
         IO.emit(users_IO + ':send_what_session_authe', {msg: 'Cliente listo para usar whatsapp'} );
-        clDestroy(1500);
+        //clDestroy(1500);
 
     });
 
@@ -101,7 +101,7 @@ function send_menssage(IO, number, msg_){
                     console.log('Mensage no enviado');
                     IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Mensaje No Enviado' });
                 }
-                clDestroy(1000); //se destroye la session
+                //clDestroy(1000); //se destroye la session
         }); 
     }); 
 
