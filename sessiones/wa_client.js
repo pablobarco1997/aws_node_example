@@ -14,16 +14,31 @@ let puppeteer_args = [
     '--disable-gpu'
 ];
 
+function  iniciarClient(session = null, reconectar = false) {
+    if(reconectar){
+        client   =  new Client({
+            puppeteer: {
+                headless: true ,
+                args: puppeteer_args
+            },
+            session: session
+        });
+    }else{
+        client   =  new Client({
+            puppeteer: {
+                headless: true ,
+                args: puppeteer_args
+            },
+        });
+    }
+
+}
+
 function clintWhatsapp(IO){
 
     console.log('Iniciado cliente whatsapp');
 
-    client   =  new Client({
-        puppeteer: {
-            headless: true ,
-            args: puppeteer_args
-        },
-    });
+    iniciarClient(null, false);
 
     client.on('qr', (qr) => {
         console.log(qr); 
@@ -50,23 +65,39 @@ function clintWhatsapp(IO){
     client.on('ready', () => {
 
         //se envia la informacion del cliente para la actualizaion
-        var me_contact = {
-            pushname : client.info.pushname , 
-            me: client.info.me
-        };
+        // var me_contact = {
+        //     me: client.info.me
+        // };
 
         IO.emit(users_IO + ':send_what_session_authe', {msg: 'Cliente listo para usar whatsapp'} );
         //clDestroy(1500);
 
     });
 
+    client.on('disconnected', () => {
+
+        IO.emit(users_IO + ':send_what_session_authe', {msg: 'Cliente no tiene una session iniciada | vuelva a inicar session'} );
+        var otraVezSession     = require('../session_json/users_' + users_IO + '_session.json');
+        iniciarClient(otraVezSession, true);
+
+    });
+
+
+    client.on('auth_failure', () => {
+
+        console.log("Ocurrio un error de autenticacion");
+        IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Ocurrio un error con la autenticacion' });
+    });
+
     client.on('message', msg => {
         if (msg.body == '!ping') {
             msg.reply('pong');
         }
-    }); 
+    });
+
 
     client.initialize();
+
 }
 
 function send_menssage(IO, number, msg_){
@@ -78,39 +109,36 @@ function send_menssage(IO, number, msg_){
 
     var otraSession     = require('../session_json/users_' + users_IO + '_session.json');
 
-    console.log(otraSession);
+    // console.log(otraSession);
 
-    client      = new Client({
-        puppeteer: {
-            headless: true ,
-            args: puppeteer_args
-        },
-        session: otraSession
-    });
+    // client      = new Client({
+    //     puppeteer: {
+    //         headless: true ,
+    //         args: puppeteer_args
+    //     },
+    //     session: otraSession
+    // });
 
-    const msg = msg_; 
+    const msg = msg_;
 
-    client.on('ready', () => {
-        console.log('ya esta la session'); 
-        client.sendMessage(chat_id, msg)
-            .then(response => {
-                if(response.id.fromMe){
-                    IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Mensaje Enviado' });
-                    console.log('Mensage  enviado');  
-                }else{
-                    console.log('Mensage no enviado');
-                    IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Mensaje No Enviado' });
-                }
-                //clDestroy(1000); //se destroye la session
-        }); 
-    }); 
+    client.sendMessage(chat_id, msg)
+        .then(response => {
+            if(response.id.fromMe){
+                IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Mensaje Enviado' });
+                console.log('Mensage  enviado');
+            }else{
+                console.log('Mensage no enviado');
+                IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Mensaje No Enviado' });
+            }
+            //clDestroy(1000); //se destroye la session
+        });
 
-    client.on('auth_failure', () => {
-        console.log("Ocurrio un error de autenticacion");
-        IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Ocurrio un error con la autenticacion' });
-    }); 
+    // client.on('auth_failure', () => {
+    //     console.log("Ocurrio un error de autenticacion");
+    //     IO.emit(users_IO + ':enviar_mensaje_whatsap' , {msg: 'Ocurrio un error con la autenticacion' });
+    // });
 
-    client.initialize();
+    // client.initialize();
 
 }
 
@@ -137,7 +165,14 @@ async function cerrarSessionClent(Timer_ = 1000){
 }
 
 
+function validarEventosOut(){
+    if(client != null){
+        client.removeAllListeners();
+    }
+}
+
 module.exports.whatsappClient    = clintWhatsapp; 
 module.exports.destroyClientWhat = cerrarSessionClent; 
-module.exports.send_menssage     = send_menssage; 
+module.exports.send_menssage     = send_menssage;
+module.exports.validarEventos    = validarEventosOut;
 
